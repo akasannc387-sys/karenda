@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SchoolPlanner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:#050c1a;color:#e2e8f0;font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN',sans-serif;min-height:100vh;}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+.header{padding:18px 20px 0;display:flex;align-items:center;gap:8px;}
+.logo-icon{font-size:20px;color:#38bdf8;}
+.logo-text{font-size:17px;font-weight:700;letter-spacing:.05em;background:linear-gradient(90deg,#38bdf8,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tab-bar{display:flex;margin:14px 16px 0;background:#0f172a;border-radius:12px;padding:4px;border:1px solid #1e293b;}
+.tab-btn{flex:1;padding:9px 0;border:none;border-radius:9px;background:transparent;color:#64748b;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;font-family:inherit;}
+.tab-btn.active{background:linear-gradient(135deg,#1e3a5f,#1e1b4b);color:#e2e8f0;box-shadow:0 2px 8px rgba(56,189,248,.15);}
+.content{flex:1;overflow-y:auto;padding:0 0 40px;}
+.tab-pane{display:none;padding:14px 16px;}
+.tab-pane.active{display:block;}
+.section{margin-bottom:22px;}
+.section-title{font-size:13px;font-weight:700;color:#64748b;letter-spacing:.08em;margin-bottom:10px;text-transform:uppercase;}
+.row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center;}
+.label{font-size:12px;color:#94a3b8;white-space:nowrap;}
+select,input[type=text],input[type=date],input[type=time]{background:#0f172a;border:1px solid #1e293b;border-radius:7px;color:#e2e8f0;padding:8px 12px;font-size:13px;outline:none;font-family:inherit;}
+select{padding:8px 10px;}
+input.flex-input{flex:1;min-width:80px;}
+.btn{background:linear-gradient(135deg,#1d4ed8,#4f46e5);border:none;border-radius:7px;color:#fff;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap;font-family:inherit;}
+.remove-btn{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:0;line-height:1;font-family:inherit;}
+.session-label{font-size:11px;color:#475569;font-weight:700;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase;}
+.date-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;}
+.date-text{font-size:15px;font-weight:700;color:#94a3b8;}
+.time-text{font-size:28px;font-weight:800;color:#38bdf8;font-variant-numeric:tabular-nums;}
+.mode-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid;margin-bottom:14px;letter-spacing:.05em;}
+.weekend-msg{text-align:center;padding:40px 0;color:#64748b;font-size:18px;}
+.session-block{margin-bottom:10px;}
+.period-cards{display:flex;flex-direction:column;gap:6px;}
+.period-card{background:#0f172a;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;border:1px solid #1e293b;border-left:3px solid #1e293b;transition:all .3s;position:relative;}
+.period-card-num{font-size:11px;color:#475569;font-weight:700;min-width:22px;}
+.period-card-time{font-size:11px;color:#334155;min-width:90px;}
+.period-card-subject{font-size:15px;font-weight:700;flex:1;}
+.active-dot{width:6px;height:6px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;flex-shrink:0;}
+.items-section{margin-top:14px;}
+.items-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.item-badge{background:#1e293b;color:#94a3b8;padding:4px 10px;border-radius:20px;font-size:12px;border:1px solid #334155;}
+.all-day-section{margin-top:18px;margin-bottom:4px;}
+.all-day-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.all-day-col{display:flex;flex-direction:column;gap:5px;}
+.all-day-col-header{font-size:11px;color:#475569;font-weight:700;margin-bottom:2px;}
+.all-day-card{border:1px solid #1e293b;border-radius:8px;padding:7px 10px;position:relative;transition:all .3s;}
+.weekly-section{margin-top:20px;}
+.weekly-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;}
+.week-col{display:flex;flex-direction:column;gap:3px;padding:4px 2px;border-radius:6px;}
+.week-col.today{background:#0f1f35;outline:1px solid #1e3a5f;}
+.week-day-label{font-size:11px;text-align:center;color:#475569;font-weight:700;padding-bottom:4px;}
+.week-col.today .week-day-label{color:#38bdf8;}
+.week-todo-cell{padding:4px 5px;border-radius:4px;}
+.week-empty{font-size:10px;color:#1e293b;text-align:center;padding:4px 0;}
+.empty-todo{text-align:center;padding:24px 0;color:#475569;font-size:14px;}
+.todo-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.todo-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#0f172a;border-radius:8px;border:1px solid #1e293b;}
+.todo-item.done{opacity:.5;}
+.checkbox{width:20px;height:20px;border-radius:6px;border:2px solid #334155;background:none;cursor:pointer;color:#38bdf8;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit;}
+.checkbox.checked{border-color:#38bdf8;background:#1e3a5f;}
+.todo-text-wrap{flex:1;min-width:0;}
+.todo-main-text{color:#e2e8f0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.todo-item.done .todo-main-text{color:#475569;text-decoration:line-through;}
+.todo-time{font-size:11px;color:#38bdf8;margin-top:2px;}
+.done-divider{font-size:11px;color:#334155;text-align:center;padding:6px 0 2px;border-top:1px solid #1e293b;margin-top:4px;}
+.day-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
+.day-tab{background:#0f172a;border:1px solid #1e293b;border-radius:6px;color:#64748b;padding:6px 12px;cursor:pointer;font-size:13px;font-family:inherit;}
+.day-tab.active{background:#1e3a5f;border-color:#38bdf8;color:#38bdf8;}
+.period-group{margin-bottom:10px;}
+.period-label{font-size:11px;color:#475569;margin-bottom:6px;font-weight:600;}
+.period-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.period-num{font-size:12px;color:#475569;min-width:24px;}
+.subject-tab-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.subject-tab-btn{border:1px solid #1e293b;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:#0f172a;color:#64748b;font-family:inherit;}
+.item-panel{background:#0a1628;border:1px solid #334155;border-radius:10px;padding:12px;}
+.item-list{display:flex;flex-wrap:wrap;gap:6px;}
+.item-chip{background:#1e293b;color:#94a3b8;padding:4px 10px;border-radius:20px;font-size:12px;display:flex;align-items:center;gap:6px;}
+.no-items-hint{color:#475569;font-size:13px;margin-bottom:10px;}
+.date-nav{display:flex;align-items:center;gap:6px;margin-bottom:12px;background:#0f172a;border-radius:10px;padding:8px 10px;border:1px solid #1e293b;}
+.nav-btn{background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:0 4px;line-height:1;font-family:inherit;}
+.date-nav-center{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;}
+.date-nav-label{font-size:15px;font-weight:700;color:#e2e8f0;}
+.today-btn{background:#1e3a5f;border:none;border-radius:6px;color:#38bdf8;font-size:11px;padding:2px 8px;cursor:pointer;font-family:inherit;}
+.cal-icon-btn{font-size:16px;cursor:pointer;padding:0 2px;}
+#memo-date-pick{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
+.add-form{margin-bottom:12px;}
+.add-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.add-meta-left{display:flex;align-items:center;gap:6px;}
+.meta-label{font-size:11px;color:#475569;}
+.meta-date,.meta-time{padding:4px 8px;font-size:12px;color:#94a3b8;}
+.meta-time{width:90px;}
+.time-toggle{background:#0f172a;border:1px solid #1e293b;border-radius:6px;color:#475569;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;}
+.time-toggle.on{border-color:#38bdf8;color:#38bdf8;background:#0f1f35;}
+textarea{width:100%;min-height:160px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;color:#e2e8f0;padding:12px;font-size:14px;resize:vertical;outline:none;line-height:1.7;font-family:inherit;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <span class="logo-icon">&#x27E1;</span>
+    <span class="logo-text">SchoolPlanner</span>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="view">&#x1F4CB; &#x4E88;&#x5B9A;</button>
+    <button class="tab-btn" data-tab="input">&#x270F;&#xFE0F; &#x5165;&#x529B;</button>
+    <button class="tab-btn" data-tab="memo">&#x1F4DD; &#x30E1;&#x30E2;</button>
+  </div>
+  <div class="content">
+    <div id="pane-view" class="tab-pane active"></div>
+    <div id="pane-input" class="tab-pane"></div>
+    <div id="pane-memo" class="tab-pane"></div>
+  </div>
+</div>
+<script>
+const DAYS=["月","火","水","木","金"];
+const DAY_KEYS=["mon","tue","wed","thu","fri"];
+const AM_TIMES=["8:30〜10:00","10:10〜11:40","11:50〜13:20"];
+const PM_TIMES=["13:30〜15:00","15:10〜16:40","16:50〜18:20","18:30〜20:00"];
+const COLORS=["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#f97316","#ec4899","#14b8a6","#84cc16"];
+const DEF_SCH=Object.fromEntries(DAY_KEYS.map(k=>[k,{am:["","",""],pm:["","","",""]}]));
+
+function load(k,fb){try{const v=JSON.parse(localStorage.getItem(k));return v!=null?v:fb;}catch{return fb;}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
+
+let S={
+  tab:"view", now:new Date(),
+  schedule:load("sc_schedule",DEF_SCH),
+  items:load("sc_items",{}),
+  overrides:load("sc_overrides",{}),
+  notes:localStorage.getItem("sc_notes")||"",
+  colorMap:load("sc_colors",{}),
+  amCount:load("sc_amcount",3),
+  pmCount:load("sc_pmcount",3),
+  todos:load("sc_todos",[]),
+  todoInput:"",
+  editDay:"mon",
+  itemSubject:"", itemInput:"",
+  overrideDate:iso(new Date()), overrideSlot:"am", overridePeriod:0, overrideSubjectVal:"",
+  filterDate:iso(new Date()), newText:"", newDate:iso(new Date()), newTime:"", showTime:false,
+};
+
+function set(patch){
+  Object.assign(S,patch);
+  if("schedule"in patch)save("sc_schedule",S.schedule);
+  if("items"in patch)save("sc_items",S.items);
+  if("overrides"in patch)save("sc_overrides",S.overrides);
+  if("notes"in patch)localStorage.setItem("sc_notes",S.notes);
+  if("colorMap"in patch)save("sc_colors",S.colorMap);
+  if("amCount"in patch)save("sc_amcount",S.amCount);
+  if("pmCount"in patch)save("sc_pmcount",S.pmCount);
+  if("todos"in patch)save("sc_todos",S.todos);
+  render();
+}
+
+function iso(d){return d.toISOString().slice(0,10);}
+function shiftIso(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d);}
+function fmtDate(s){const d=new Date(s+"T00:00:00");const w=["日","月","火","水","木","金","土"][d.getDay()];return`${d.getMonth()+1}/${d.getDate()}（${w}）`;}
+function todayKey(){const w=S.now.getDay();return(w===0||w===6)?null:DAY_KEYS[w-1];}
+function timeMode(){const t=S.now.getHours()*60+S.now.getMinutes();return t<720?"am":t<960?"pm":"after";}
+function curPeriod(){
+  const t=S.now.getHours()*60+S.now.getMinutes();
+  const slots=[[510,600],[610,700],[710,800],[810,900],[910,1000],[1010,1100],[1110,1200]];
+  for(let i=0;i<slots.length;i++)if(t>=slots[i][0]&&t<=slots[i][1])return i;
+  return -1;
+}
+function subColor(s){return S.colorMap[s]||"#64748b";}
+function ensureColor(s){
+  if(!s||S.colorMap[s])return;
+  const used=Object.values(S.colorMap);
+  const c=COLORS.find(x=>!used.includes(x))||COLORS[used.length%COLORS.length];
+  set({colorMap:{...S.colorMap,[s]:c}});
+}
+function weekDates(){
+  const dow=S.now.getDay();
+  return DAYS.map((_,di)=>{const d=new Date(S.now);d.setDate(S.now.getDate()+(di+1-dow));return iso(d);});
+}
+function getSubject(dk,idx,isAm){
+  const slot=isAm?"am":"pm";
+  const oKey=`${iso(S.now)}_${dk}_${slot}_${idx}`;
+  if(S.overrides[oKey]!==undefined)return S.overrides[oKey];
+  return S.schedule[dk]?.[slot]?.[idx]||"";
+}
+function allSubjects(){
+  const s=new Set();
+  for(const d of DAY_KEYS)for(const sl of["am","pm"])(S.schedule[d]?.[sl]||[]).forEach(x=>x&&s.add(x));
+  return Array.from(s);
+}
+function todayItems(){
+  const tk=todayKey();if(!tk)return[];
+  const subs=[];
+  for(let i=0;i<S.amCount;i++)subs.push(getSubject(tk,i,true));
+  for(let i=0;i<S.pmCount;i++)subs.push(getSubject(tk,i,false));
+  const all=new Set();
+  subs.filter(Boolean).forEach(s=>(S.items[s]||[]).forEach(it=>all.add(it)));
+  return Array.from(all);
+}
+function sortedTodos(date){
+  return S.todos.filter(t=>t.date===date).sort((a,b)=>{
+    if(!a.time&&!b.time)return 0;if(!a.time)return 1;if(!b.time)return -1;
+    return a.time.localeCompare(b.time);
+  });
+}
+function e(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+// ── VIEW ──
+function buildView(){
+  const todayIso=iso(S.now);
+  const tk=todayKey();
+  const tm=timeMode();
+  const period=curPeriod();
+  const isWE=S.now.getDay()===0||S.now.getDay()===6;
+  const dn=["日","月","火","水","木","金","土"];
+  const dateStr=`${S.now.getMonth()+1}月${S.now.getDate()}日（${dn[S.now.getDay()]}）`;
+  const hh=String(S.now.getHours()).padStart(2,"0");
+  const mm=String(S.now.getMinutes()).padStart(2,"0");
+  const mLabels={am:"☀️ 午前の授業",pm:"🌙 午後の授業",after:"🌃 放課後"};
+  const mColors={am:"#f59e0b",pm:"#818cf8",after:"#10b981"};
+  const tItems=todayItems();
+  const wDates=weekDates();
+  const nowT=S.now.getHours()*60+S.now.getMinutes();
+  const tTodos=sortedTodos(todayIso);
+
+  let h=`<div class="date-header"><div class="date-text">${e(dateStr)}</div><div class="time-text">${hh}:${mm}</div></div>`;
+  if(!isWE){const bc=mColors[tm];h+=`<div class="mode-badge" style="background:${bc}22;border-color:${bc};color:${bc}">${mLabels[tm]}</div>`;}
+
+  if(isWE){
+    h+=`<div class="weekend-msg">🎉 今日は休日です</div>`;
+  } else if(tm==="am"){
+    h+=`<div class="session-block"><div class="session-label">☀️ 午前</div><div class="period-cards">`;
+    for(let i=0;i<S.amCount;i++){const s=getSubject(tk,i,true);const c=subColor(s);h+=pCard(s,i+1,AM_TIMES[i],period===i,c);}
+    h+=`</div></div>`;
+    if(tItems.length>0){h+=`<div class="items-section"><div class="session-label">🎒 今日の持ち物</div><div class="items-grid">`;tItems.forEach(it=>h+=`<div class="item-badge">${e(it)}</div>`);h+=`</div></div>`;}
+  } else if(tm==="pm"){
+    h+=`<div class="session-block"><div class="session-label">🌙 午後</div><div class="period-cards">`;
+    for(let i=0;i<S.pmCount;i++){const s=getSubject(tk,i,false);const c=subColor(s);h+=pCard(s,S.amCount+i+1,PM_TIMES[i],period===S.amCount+i,c);}
+    h+=`</div></div>`;
+    if(tItems.length>0){h+=`<div class="items-section"><div class="session-label">🎒 今日の持ち物</div><div class="items-grid">`;tItems.forEach(it=>h+=`<div class="item-badge">${e(it)}</div>`);h+=`</div></div>`;}
+  } else {
+    h+=`<div class="section"><div class="session-label">✅ 今日のやること</div>
+    <div class="row"><input class="flex-input" id="v-todo-input" type="text" placeholder="タスクを追加..." value="${e(S.todoInput)}">
+    <button class="btn" onclick="addTodayTodo()">追加</button></div>`;
+    if(tTodos.length===0){h+=`<div class="empty-todo">お疲れ様！今日のタスクはありません 🎉</div>`;}
+    else{h+=`<div class="todo-list">`;tTodos.forEach(t=>{h+=todoItem(t);});h+=`</div>`;}
+    h+=`</div>`;
+  }
+
+  if(!isWE){
+    h+=`<div class="all-day-section"><div class="session-label">📋 今日の全授業</div><div class="all-day-grid">`;
+    h+=`<div class="all-day-col"><div class="all-day-col-header">☀️ 午前</div>`;
+    for(let i=0;i<S.amCount;i++){
+      const s=getSubject(tk,i,true);const c=s?subColor(s):"#1e293b";const a=period===i;
+      h+=`<div class="all-day-card" style="border-color:${a?c:"#1e293b"};background:${s?c+"18":"#0a1628"};box-shadow:${a?`0 0 10px ${c}44`:"none"}">
+        <div style="font-size:9px;color:#475569;margin-bottom:2px">${AM_TIMES[i]}</div>
+        <div style="font-size:13px;font-weight:700;color:${s?c:"#334155"}">${e(s)||"—"}</div>
+        ${a?`<div class="active-dot" style="position:absolute;top:6px;right:6px"></div>`:""}</div>`;
+    }
+    h+=`</div><div class="all-day-col"><div class="all-day-col-header">🌙 午後</div>`;
+    for(let i=0;i<S.pmCount;i++){
+      const s=getSubject(tk,i,false);const c=s?subColor(s):"#1e293b";const a=period===S.amCount+i;
+      h+=`<div class="all-day-card" style="border-color:${a?c:"#1e293b"};background:${s?c+"18":"#0a1628"};box-shadow:${a?`0 0 10px ${c}44`:"none"}">
+        <div style="font-size:9px;color:#475569;margin-bottom:2px">${PM_TIMES[i]}</div>
+        <div style="font-size:13px;font-weight:700;color:${s?c:"#334155"}">${e(s)||"—"}</div>
+        ${a?`<div class="active-dot" style="position:absolute;top:6px;right:6px"></div>`:""}</div>`;
+    }
+    h+=`</div></div></div>`;
+  }
+
+  h+=`<div class="weekly-section"><div class="session-label">📆 今週の予定</div><div class="weekly-grid">`;
+  wDates.forEach((dateS,di)=>{
+    const isT=dateS===todayIso;
+    const dTodos=sortedTodos(dateS);
+    h+=`<div class="week-col${isT?" today":""}"><div class="week-day-label">${DAYS[di]}</div>`;
+    if(dTodos.length===0){h+=`<div class="week-empty">—</div>`;}
+    else dTodos.forEach(t=>{
+      const tp=t.time?t.time.split(":").map(Number):null;
+      const tT=tp?tp[0]*60+tp[1]:null;
+      const past=isT&&tT!==null&&tT<nowT;
+      const op=t.done?0.35:past?0.6:1;
+      const bl=t.done?"#1e293b":isT?"#38bdf8":"#334155";
+      const bg=isT?"#0f1f35":"#0f172a";
+      const tc=t.done?"#334155":past?"#475569":"#94a3b8";
+      h+=`<div class="week-todo-cell" style="opacity:${op};text-decoration:${t.done?"line-through":"none"};border-left:2px solid ${bl};background:${bg}">
+        ${t.time?`<div style="font-size:8px;color:${past?"#334155":"#38bdf8"};margin-bottom:1px">${e(t.time)}</div>`:""}
+        <div style="font-size:9px;color:${tc};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(t.text)}</div></div>`;
+    });
+    h+=`</div>`;
+  });
+  h+=`</div></div>`;
+  return h;
+}
+
+function pCard(s,num,time,active,color){
+  const bl=s?`border-left:3px solid ${color}`:"";
+  const act=active?`border-color:${color};box-shadow:0 0 16px ${color}55;background:#0f1f35`:"";
+  return `<div class="period-card" style="${bl};${act}">
+    <div class="period-card-num">${num}限</div>
+    <div class="period-card-time">${time}</div>
+    <div class="period-card-subject" style="color:${s?color:"#334155"}">${e(s)||"—"}</div>
+    ${active?`<div class="active-dot"></div>`:""}
+  </div>`;
+}
+
+function todoItem(t){
+  return `<div class="todo-item${t.done?" done":""}">
+    <button class="checkbox${t.done?" checked":""}" onclick="toggleTodo(${t.id})">${t.done?"✓":""}</button>
+    <div class="todo-text-wrap">
+      <div class="todo-main-text">${e(t.text)}</div>
+      ${t.time?`<div class="todo-time">🕐 ${e(t.time)}</div>`:""}
+    </div>
+    <button class="remove-btn" onclick="delTodo(${t.id})">×</button>
+  </div>`;
+}
+
+// ── INPUT ──
+function buildInput(){
+  let h=`<div class="section"><h3 class="section-title">⚙️ コマ数設定</h3>
+  <div class="row">
+    <span class="label">午前</span>
+    <select onchange="set({amCount:Number(this.value)})">${[2,3].map(n=>`<option value="${n}"${S.amCount===n?" selected":""}>${n}コマ</option>`).join("")}</select>
+    <span class="label" style="margin-left:8px">午後</span>
+    <select onchange="set({pmCount:Number(this.value)})">${[3,4].map(n=>`<option value="${n}"${S.pmCount===n?" selected":""}>${n}コマ</option>`).join("")}</select>
+  </div></div>
+
+  <div class="section"><h3 class="section-title">📅 通常時間割</h3>
+  <div class="day-tabs">${DAY_KEYS.map((dk,i)=>`<button class="day-tab${S.editDay===dk?" active":""}" onclick="set({editDay:'${dk}'})">${DAYS[i]}曜</button>`).join("")}</div>
+  <div class="period-group"><div class="period-label">☀️ 午前</div>
+  ${Array.from({length:S.amCount},(_,i)=>`<div class="period-row"><span class="period-num">${i+1}限</span>
+  <input class="flex-input" type="text" placeholder="教科名" value="${e(S.schedule[S.editDay]?.am?.[i]||"")}"
+    oninput="updSch('${S.editDay}','am',${i},this.value)"></div>`).join("")}</div>
+  <div class="period-group"><div class="period-label">🌙 午後</div>
+  ${Array.from({length:S.pmCount},(_,i)=>`<div class="period-row"><span class="period-num">${S.amCount+i+1}限</span>
+  <input class="flex-input" type="text" placeholder="教科名" value="${e(S.schedule[S.editDay]?.pm?.[i]||"")}"
+    oninput="updSch('${S.editDay}','pm',${i},this.value)"></div>`).join("")}</div></div>
+
+  <div class="section"><h3 class="section-title">✏️ 特別授業（その日限り）</h3>
+  <div class="row"><input type="date" class="flex-input" value="${S.overrideDate}" onchange="set({overrideDate:this.value})"></div>
+  <div class="row">
+    <select onchange="set({overrideSlot:this.value,overridePeriod:0})">
+      <option value="am"${S.overrideSlot==="am"?" selected":""}>午前</option>
+      <option value="pm"${S.overrideSlot==="pm"?" selected":""}>午後</option>
+    </select>
+    <select onchange="set({overridePeriod:Number(this.value)})">
+      ${Array.from({length:S.overrideSlot==="am"?S.amCount:S.pmCount},(_,i)=>`<option value="${i}"${S.overridePeriod===i?" selected":""}>${S.overrideSlot==="am"?i+1:S.amCount+i+1}限</option>`).join("")}
+    </select>
+  </div>
+  <div class="row"><input class="flex-input" type="text" placeholder="授業名（空欄で削除）" value="${e(S.overrideSubjectVal)}"
+    oninput="S.overrideSubjectVal=this.value" onkeydown="if(event.key==='Enter')regOverride()">
+  <button class="btn" onclick="regOverride()">登録</button></div></div>
+
+  <div class="section"><h3 class="section-title">🎒 持ち物登録</h3>${buildItems()}</div>`;
+  return h;
+}
+
+function buildItems(){
+  const subs=allSubjects();
+  if(subs.length===0)return`<div class="no-items-hint">時間割に教科を登録すると、ここに教科タブが表示されます。</div>`;
+  let h=`<div class="subject-tab-bar">`;
+  subs.forEach(s=>{
+    const c=subColor(s);const active=S.itemSubject===s;
+    h+=`<button class="subject-tab-btn" onclick="toggleItemSubj('${e(s)}')"
+      style="border-color:${active?c:"#1e293b"};background:${active?c+"22":"#0f172a"};color:${active?c:"#64748b"}">${e(s)}</button>`;
+  });
+  h+=`</div>`;
+  if(S.itemSubject){
+    const c=subColor(S.itemSubject);const its=S.items[S.itemSubject]||[];
+    h+=`<div class="item-panel" style="border-color:${c}66">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input class="flex-input" type="text" id="item-inp" placeholder="${e(S.itemSubject)}の持ち物を追加..." value="${e(S.itemInput)}"
+          oninput="S.itemInput=this.value" onkeydown="if(event.key==='Enter')addItem()">
+        <button class="btn" onclick="addItem()">追加</button>
+      </div>`;
+    if(its.length===0){h+=`<div style="color:#334155;font-size:12px">まだ登録された持ち物はありません</div>`;}
+    else{
+      h+=`<div class="item-list">`;
+      its.forEach((it,i)=>h+=`<div class="item-chip">${e(it)}<button class="remove-btn" onclick="rmItem(${i})">×</button></div>`);
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+  return h;
+}
+
+// ── MEMO ──
+function buildMemo(){
+  const filt=sortedTodos(S.filterDate);
+  const undone=filt.filter(t=>!t.done);
+  const done=filt.filter(t=>t.done);
+  const isT=S.filterDate===iso(S.now);
+  let h=`<div class="section">
+  <div class="date-nav">
+    <button class="nav-btn" onclick="set({filterDate:shiftIso(S.filterDate,-1)})">&#x2039;</button>
+    <div class="date-nav-center">
+      <span class="date-nav-label">${fmtDate(S.filterDate)}</span>
+      ${!isT?`<button class="today-btn" onclick="set({filterDate:iso(S.now)})">今日</button>`:""}
+    </div>
+    <input type="date" id="memo-date-pick" value="${S.filterDate}" onchange="set({filterDate:this.value})">
+    <label for="memo-date-pick" class="cal-icon-btn">📅</label>
+    <button class="nav-btn" onclick="set({filterDate:shiftIso(S.filterDate,1)})">&#x203A;</button>
+  </div>
+  <div class="add-form">
+    <div class="row">
+      <input class="flex-input" type="text" id="memo-new" placeholder="タスクを追加..." value="${e(S.newText)}"
+        oninput="S.newText=this.value" onkeydown="if(event.key==='Enter')addMemo()">
+      <button class="btn" onclick="addMemo()">追加</button>
+    </div>
+    <div class="add-meta">
+      <div class="add-meta-left">
+        <span class="meta-label">日付</span>
+        <input type="date" class="meta-date" value="${S.newDate}" onchange="set({newDate:this.value})">
+      </div>
+      <button class="time-toggle${S.showTime?" on":""}" onclick="set({showTime:!S.showTime,newTime:''})">🕐 ${S.showTime?"時刻あり":"時刻なし"}</button>
+      ${S.showTime?`<input type="time" class="meta-time" value="${S.newTime}" onchange="set({newTime:this.value})">`:""}</div>
+  </div>
+  ${filt.length===0?`<div class="empty-todo">この日のタスクはありません</div>`:`
+  <div class="todo-list">
+    ${undone.map(t=>todoItem(t)).join("")}
+    ${done.length>0?`<div class="done-divider">完了済み ${done.length}件</div>${done.map(t=>todoItem(t)).join("")}`:""}
+  </div>`}
+  </div>
+  <div class="section"><h3 class="section-title">📝 フリーメモ</h3>
+  <textarea id="free-notes" oninput="S.notes=this.value;save('sc_notes',this.value)">${e(S.notes)}</textarea></div>`;
+  return h;
+}
+
+// ── アクション ──
+function updSch(day,slot,idx,val){
+  const n=JSON.parse(JSON.stringify(S.schedule));n[day][slot][idx]=val;set({schedule:n});if(val)ensureColor(val);
+}
+function regOverride(){
+  const d=new Date(S.overrideDate+"T00:00:00").getDay();if(d===0||d===6)return;
+  const dk=DAY_KEYS[d-1];const oKey=`${S.overrideDate}_${dk}_${S.overrideSlot}_${S.overridePeriod}`;
+  const n={...S.overrides};
+  if(S.overrideSubjectVal==="")delete n[oKey];else{n[oKey]=S.overrideSubjectVal;ensureColor(S.overrideSubjectVal);}
+  set({overrides:n,overrideSubjectVal:""});
+}
+function toggleItemSubj(s){set({itemSubject:S.itemSubject===s?"":s,itemInput:""});}
+function addItem(){
+  const el=document.getElementById("item-inp");
+  const val=(el?el.value:S.itemInput).trim();
+  if(!val||!S.itemSubject)return;
+  const n={...S.items,[S.itemSubject]:[...(S.items[S.itemSubject]||[]),val]};
+  set({items:n,itemInput:""});
+}
+function rmItem(idx){
+  const n={...S.items,[S.itemSubject]:S.items[S.itemSubject].filter((_,j)=>j!==idx)};set({items:n});
+}
+function toggleTodo(id){set({todos:S.todos.map(t=>t.id===id?{...t,done:!t.done}:t)});}
+function delTodo(id){set({todos:S.todos.filter(t=>t.id!==id)});}
+function addTodayTodo(){
+  const el=document.getElementById("v-todo-input");const val=(el?el.value:"").trim();if(!val)return;
+  set({todos:[...S.todos,{text:val,done:false,id:Date.now(),date:iso(S.now),time:""}],todoInput:""});
+}
+function addMemo(){
+  const el=document.getElementById("memo-new");const val=(el?el.value:S.newText).trim();if(!val)return;
+  set({todos:[...S.todos,{text:val,done:false,id:Date.now(),date:S.newDate,time:S.newTime}],newText:"",newTime:"",showTime:false});
+}
+
+// ── タブ ──
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab-pane").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("pane-"+btn.dataset.tab).classList.add("active");
+    S.tab=btn.dataset.tab;
+  });
+});
+
+// ── レンダリング ──
+function render(){
+  document.getElementById("pane-view").innerHTML=buildView();
+  document.getElementById("pane-input").innerHTML=buildInput();
+  document.getElementById("pane-memo").innerHTML=buildMemo();
+}
+
+setInterval(()=>{S.now=new Date();render();},60000);
+render();
+</script>
+</body>
+</html>
