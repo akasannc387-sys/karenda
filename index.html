@@ -329,11 +329,15 @@ function buildInput(){
   <div class="period-group"><div class="period-label">☀️ 午前</div>
   ${Array.from({length:S.amCount},(_,i)=>`<div class="period-row"><span class="period-num">${i+1}限</span>
   <input class="flex-input" type="text" placeholder="教科名" value="${e(S.schedule[S.editDay]?.am?.[i]||"")}"
-    oninput="updSch('${S.editDay}','am',${i},this.value)"></div>`).join("")}</div>
+    oninput="updSchLive('${S.editDay}','am',${i},this.value)"
+    onblur="updSchCommit('${S.editDay}','am',${i},this.value)"
+    onkeydown="if(event.key==='Enter'){updSchCommit('${S.editDay}','am',${i},this.value);this.blur();}"></div>`).join("")}</div>
   <div class="period-group"><div class="period-label">🌙 午後</div>
   ${Array.from({length:S.pmCount},(_,i)=>`<div class="period-row"><span class="period-num">${S.amCount+i+1}限</span>
   <input class="flex-input" type="text" placeholder="教科名" value="${e(S.schedule[S.editDay]?.pm?.[i]||"")}"
-    oninput="updSch('${S.editDay}','pm',${i},this.value)"></div>`).join("")}</div></div>
+    oninput="updSchLive('${S.editDay}','pm',${i},this.value)"
+    onblur="updSchCommit('${S.editDay}','pm',${i},this.value)"
+    onkeydown="if(event.key==='Enter'){updSchCommit('${S.editDay}','pm',${i},this.value);this.blur();}"></div>`).join("")}</div></div>
 
   <div class="section"><h3 class="section-title">✏️ 特別授業（その日限り）</h3>
   <div class="row"><input type="date" class="flex-input" value="${S.overrideDate}" onchange="set({overrideDate:this.value})"></div>
@@ -346,11 +350,11 @@ function buildInput(){
       ${Array.from({length:S.overrideSlot==="am"?S.amCount:S.pmCount},(_,i)=>`<option value="${i}"${S.overridePeriod===i?" selected":""}>${S.overrideSlot==="am"?i+1:S.amCount+i+1}限</option>`).join("")}
     </select>
   </div>
-  <div class="row"><input class="flex-input" type="text" placeholder="授業名（空欄で削除）" value="${e(S.overrideSubjectVal)}"
-    oninput="S.overrideSubjectVal=this.value" onkeydown="if(event.key==='Enter')regOverride()">
+  <div class="row"><input class="flex-input" type="text" id="override-subj-inp" placeholder="授業名（空欄で削除）" value="${e(S.overrideSubjectVal)}"
+    onkeydown="if(event.key==='Enter')regOverride()">
   <button class="btn" onclick="regOverride()">登録</button></div></div>
 
-  <div class="section"><h3 class="section-title">🎒 持ち物登録</h3>${buildItems()}</div>`;
+  <div class="section"><h3 class="section-title">🎒 持ち物登録</h3><div id="items-section">${buildItems()}</div></div>`;
   return h;
 }
 
@@ -403,16 +407,16 @@ function buildMemo(){
   <div class="add-form">
     <div class="row">
       <input class="flex-input" type="text" id="memo-new" placeholder="タスクを追加..." value="${e(S.newText)}"
-        oninput="S.newText=this.value" onkeydown="if(event.key==='Enter')addMemo()">
+        onkeydown="if(event.key==='Enter')addMemo()">
       <button class="btn" onclick="addMemo()">追加</button>
     </div>
     <div class="add-meta">
       <div class="add-meta-left">
         <span class="meta-label">日付</span>
-        <input type="date" class="meta-date" value="${S.newDate}" onchange="set({newDate:this.value})">
+        <input type="date" class="meta-date" value="${S.newDate}" onchange="S.newDate=this.value">
       </div>
       <button class="time-toggle${S.showTime?" on":""}" onclick="set({showTime:!S.showTime,newTime:''})">🕐 ${S.showTime?"時刻あり":"時刻なし"}</button>
-      ${S.showTime?`<input type="time" class="meta-time" value="${S.newTime}" onchange="set({newTime:this.value})">`:""}</div>
+      ${S.showTime?`<input type="time" class="meta-time" value="${S.newTime}" onchange="S.newTime=this.value">`:""}</div>
   </div>
   ${filt.length===0?`<div class="empty-todo">この日のタスクはありません</div>`:`
   <div class="todo-list">
@@ -426,10 +430,31 @@ function buildMemo(){
 }
 
 // ── アクション ──
-function updSch(day,slot,idx,val){
-  const n=JSON.parse(JSON.stringify(S.schedule));n[day][slot][idx]=val;set({schedule:n});if(val)ensureColor(val);
+// 時間割入力: blur時だけ保存 → render不要なのでDOMを再構築しない
+function updSchLive(day,slot,idx,val){
+  // メモリだけ更新（renderなし）
+  if(!S.schedule[day]) return;
+  S.schedule[day][slot][idx]=val;
 }
+function updSchCommit(day,slot,idx,val){
+  // blur/Enter時に保存してcolorだけ更新
+  const n=JSON.parse(JSON.stringify(S.schedule));
+  n[day][slot][idx]=val;
+  S.schedule=n;
+  save("sc_schedule",S.schedule);
+  if(val) ensureColor(val);
+  // 持ち物タブだけ再描画（教科リスト更新のため）
+  renderItems();
+}
+function renderItems(){
+  // 入力タブの持ち物セクションだけ部分更新
+  const el=document.getElementById("items-section");
+  if(el) el.innerHTML=buildItems();
+}
+
 function regOverride(){
+  const ovEl=document.getElementById("override-subj-inp");
+  if(ovEl) S.overrideSubjectVal=ovEl.value;
   const d=new Date(S.overrideDate+"T00:00:00").getDay();if(d===0||d===6)return;
   const dk=DAY_KEYS[d-1];const oKey=`${S.overrideDate}_${dk}_${S.overrideSlot}_${S.overridePeriod}`;
   const n={...S.overrides};
@@ -439,7 +464,7 @@ function regOverride(){
 function toggleItemSubj(s){set({itemSubject:S.itemSubject===s?"":s,itemInput:""});}
 function addItem(){
   const el=document.getElementById("item-inp");
-  const val=(el?el.value:S.itemInput).trim();
+  const val=(el?el.value:"").trim();
   if(!val||!S.itemSubject)return;
   const n={...S.items,[S.itemSubject]:[...(S.items[S.itemSubject]||[]),val]};
   set({items:n,itemInput:""});
@@ -454,7 +479,7 @@ function addTodayTodo(){
   set({todos:[...S.todos,{text:val,done:false,id:Date.now(),date:iso(S.now),time:""}],todoInput:""});
 }
 function addMemo(){
-  const el=document.getElementById("memo-new");const val=(el?el.value:S.newText).trim();if(!val)return;
+  const el=document.getElementById("memo-new");const val=(el?el.value:"").trim();if(!val)return;
   set({todos:[...S.todos,{text:val,done:false,id:Date.now(),date:S.newDate,time:S.newTime}],newText:"",newTime:"",showTime:false});
 }
 
