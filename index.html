@@ -187,7 +187,35 @@ function set(patch){
   render();
 }
 
+// 今日より前の日付のtodos・dayOverridesを削除
+function cleanupPastData(){
+  const today=isoToday();
+  const newTodos=S.todos.filter(t=>t.date>=today);
+  const newOv={};
+  Object.keys(S.dayOverrides).forEach(k=>{if(k>=today)newOv[k]=S.dayOverrides[k];});
+  const changed=newTodos.length!==S.todos.length||Object.keys(newOv).length!==Object.keys(S.dayOverrides).length;
+  if(changed){
+    S.todos=newTodos;save("sc_todos",S.todos);
+    S.dayOverrides=newOv;save("sc_day_overrides",S.dayOverrides);
+  }
+}
+
 function todayKey(){const w=S.now.getDay();return(w===0||w===6)?null:DAY_KEYS[w-1];}
+
+// 18:00以降は翌日の予定を表示する
+function viewDate(){
+  const t=S.now.getHours()*60+S.now.getMinutes();
+  if(t>=1080){
+    const d=new Date(S.now);d.setDate(d.getDate()+1);return iso(d);
+  }
+  return iso(S.now);
+}
+function viewDateKey(){
+  const vd=viewDate();
+  const d=new Date(vd+"T00:00:00");const w=d.getDay();
+  return(w===0||w===6)?null:DAY_KEYS[w-1];
+}
+
 function timeMode(){const t=S.now.getHours()*60+S.now.getMinutes();return t<720?"am":t<960?"pm":"after";}
 function curPeriod(){
   const t=S.now.getHours()*60+S.now.getMinutes();
@@ -232,8 +260,14 @@ function sortedTodos(date){
 }
 
 function weekDates(){
-  const dow=S.now.getDay();
-  return DAYS.map((_,di)=>{const d=new Date(S.now);d.setDate(S.now.getDate()+(di+1-dow));return iso(d);});
+  // 今日から5日間
+  return Array.from({length:5},(_,i)=>{
+    const d=new Date(S.now);d.setDate(S.now.getDate()+i);return iso(d);
+  });
+}
+function weekDayLabel(dateStr){
+  const d=new Date(dateStr+"T00:00:00");
+  return["日","月","火","水","木","金","土"][d.getDay()];
 }
 
 // ── 特別授業操作 ──────────────────────────────────────────────────
@@ -333,23 +367,35 @@ function todoItem(t){
 }
 
 function buildView(){
-  const todayIso=iso(S.now);const tk=todayKey();const tm=timeMode();const period=curPeriod();
-  const isWE=S.now.getDay()===0||S.now.getDay()===6;
+  const todayIso=iso(S.now);
+  const vd=viewDate();           // 12:00以降は翌日
+  const vdk=viewDateKey();       // 翌日の曜日キー
+  const isNextDay=vd!==todayIso;
+  const tm=timeMode();const period=curPeriod();
+  const vdObj=new Date(vd+"T00:00:00");
+  const isWE=vdObj.getDay()===0||vdObj.getDay()===6;
   const dn=["日","月","火","水","木","金","土"];
-  const ds=`${S.now.getMonth()+1}月${S.now.getDate()}日（${dn[S.now.getDay()]}）`;
+  // ヘッダーは常に今日の時刻、日付は表示対象日
+  const ds=`${vdObj.getMonth()+1}月${vdObj.getDate()}日（${dn[vdObj.getDay()]}）${isNextDay?"（明日）":""}`;
   const hh=String(S.now.getHours()).padStart(2,"0"),mm=String(S.now.getMinutes()).padStart(2,"0");
-  const mLbl={am:"☀️ 午前の授業",pm:"🌙 午後の授業",after:"🌃 放課後"};
+  const mLbl={am:"☀️ 午前の授業",pm:"🌙 午後の授業",after:"🌃 明日の予定"};
   const mClr={am:"#f59e0b",pm:"#818cf8",after:"#10b981"};
-  const tItems=todayItems(),wDates=weekDates();
+  const tItems=(() => {
+    const subs=effectiveSchedule(vd);
+    const all=new Set();
+    subs.filter(Boolean).forEach(s=>(S.items[s]||[]).forEach(it=>all.add(it)));
+    return Array.from(all);
+  })();
+  const wDates=weekDates();
   const nowT=S.now.getHours()*60+S.now.getMinutes();
-  const tTodos=sortedTodos(todayIso);
-  const effSch=effectiveSchedule(todayIso);
+  const tTodos=sortedTodos(vd);    // 表示対象日のメモ
+  const effSch=effectiveSchedule(vd);
 
   let h=`<div class="dh"><div class="dt">${e(ds)}</div><div class="tt">${hh}:${mm}</div></div>`;
   if(!isWE){const bc=mClr[tm];h+=`<div class="mbadge" style="background:${bc}22;border-color:${bc};color:${bc}">${mLbl[tm]}</div>`;}
 
   if(isWE){
-    h+=`<div class="wmsg">🎉 今日は休日です</div>`;
+    h+=`<div class="wmsg">🎉 ${isNextDay?"明日は":"今日は"}休日です</div>`;
   } else if(tm==="am"){
     h+=`<div class="sb"><div class="slbl">☀️ 午前</div><div class="pcards">`;
     h+=pCard("","SHL",SHL_TIME,period===0);
@@ -362,21 +408,33 @@ function buildView(){
     h+=`</div></div>`;
     if(tItems.length>0){h+=`<div class="isec"><div class="slbl">🎒 今日の持ち物</div><div class="igrid">`;tItems.forEach(it=>h+=`<div class="ibadge">${e(it)}</div>`);h+=`</div></div>`;}
   } else {
-    h+=`<div class="sec"><div class="slbl">✅ 今日のやること</div>
-    <div class="row"><input class="fi" id="v-todo-inp" type="text" placeholder="タスクを追加...">
-    <button class="btn" onclick="addTodayTodo()">追加</button></div>`;
-    if(tTodos.length===0)h+=`<div class="etodo">お疲れ様！タスクはありません 🎉</div>`;
-    else{h+=`<div class="tlist">`;tTodos.forEach(t=>h+=todoItem(t));h+=`</div>`;}
+    // 放課後 → 翌日の授業＋メモを表示
+    h+=`<div class="sb"><div class="slbl">📅 明日の授業</div>`;
+    if(isWE){
+      h+=`<div style="color:#475569;font-size:13px;padding:8px 0">明日は休日です</div>`;
+    } else {
+      h+=`<div class="pcards">`;
+      h+=pCard("","SHL",SHL_TIME,false);
+      for(let i=0;i<S.amCount;i++) h+=pCard(effSch[i]||"",`${i+1}限`,PERIOD_TIMES[i],false);
+      for(let i=0;i<S.pmCount;i++) h+=pCard(effSch[S.amCount+i]||"",`${S.amCount+i+1}限`,PERIOD_TIMES[S.amCount+i],false);
+      h+=`</div>`;
+      if(tItems.length>0){h+=`<div class="isec"><div class="slbl">🎒 明日の持ち物</div><div class="igrid">`;tItems.forEach(it=>h+=`<div class="ibadge">${e(it)}</div>`);h+=`</div></div>`;}
+    }
     h+=`</div>`;
+    if(tTodos.length>0){
+      h+=`<div class="sec"><div class="slbl">📝 明日のメモ</div><div class="tlist">`;
+      tTodos.forEach(t=>h+=todoItem(t));
+      h+=`</div></div>`;
+    }
   }
 
   // 全授業ビュー
   if(!isWE){
-    h+=`<div class="adsec"><div class="slbl">📋 今日の全授業</div><div class="adgrid">
+    h+=`<div class="adsec"><div class="slbl">📋 ${isNextDay?"明日":"今日"}の全授業</div><div class="adgrid">
     <div class="adcol"><div class="adch">☀️ 午前</div>
     <div class="adcard" style="background:#0a1628;border-color:#0f2040"><div style="font-size:9px;color:#334155">${SHL_TIME}</div><div style="font-size:12px;font-weight:700;color:#334155">SHL</div></div>`;
     for(let i=0;i<S.amCount;i++){
-      const s=effSch[i]||"";const c=s?subColor(s):"#1e293b";const a=period===i+1;
+      const s=effSch[i]||"";const c=s?subColor(s):"#1e293b";const a=!isNextDay&&period===i+1;
       h+=`<div class="adcard" style="border-color:${a?c:"#1e293b"};background:${s?c+"18":"#0a1628"};box-shadow:${a?`0 0 10px ${c}44`:"none"}">
         <div style="font-size:9px;color:#475569">${PERIOD_TIMES[i]}</div>
         <div style="font-size:12px;font-weight:700;color:${s?c:"#334155"}">${e(s)||"—"}</div>
@@ -384,7 +442,7 @@ function buildView(){
     }
     h+=`</div><div class="adcol"><div class="adch">🌙 午後</div>`;
     for(let i=0;i<S.pmCount;i++){
-      const s=effSch[S.amCount+i]||"";const c=s?subColor(s):"#1e293b";const a=period===S.amCount+i+1;
+      const s=effSch[S.amCount+i]||"";const c=s?subColor(s):"#1e293b";const a=!isNextDay&&period===S.amCount+i+1;
       h+=`<div class="adcard" style="border-color:${a?c:"#1e293b"};background:${s?c+"18":"#0a1628"};box-shadow:${a?`0 0 10px ${c}44`:"none"}">
         <div style="font-size:9px;color:#475569">${PERIOD_TIMES[S.amCount+i]}</div>
         <div style="font-size:12px;font-weight:700;color:${s?c:"#334155"}">${e(s)||"—"}</div>
@@ -396,9 +454,9 @@ function buildView(){
   // 週間メモ（時刻あり→時間順、時刻なし→後）
   h+=`<div class="wsec"><div class="slbl">📆 今週の予定</div><div class="wgrid">`;
   wDates.forEach((ds2,di)=>{
-    const isT=ds2===todayIso;
+    const isT=ds2===vd;   // 表示対象日をハイライト
     const dTodos=sortedTodos(ds2);
-    h+=`<div class="wcol${isT?" today":""}"><div class="wdl">${DAYS[di]}</div>`;
+    h+=`<div class="wcol${isT?" today":""}"><div class="wdl">${weekDayLabel(ds2)}</div>`;
     if(dTodos.length===0)h+=`<div class="wemp">—</div>`;
     else dTodos.forEach(t=>{
       const tp=t.time?t.time.split(":").map(Number):null;
@@ -609,7 +667,17 @@ function render(){
   document.getElementById("pane-memo").innerHTML=buildMemo();
 }
 
-setInterval(()=>{S.now=new Date();render();},60000);
+let _lastDate=isoToday();
+setInterval(()=>{
+  S.now=new Date();
+  const today=isoToday();
+  if(today!==_lastDate){
+    _lastDate=today;
+    cleanupPastData();
+  }
+  render();
+},60000);
+cleanupPastData();
 render();
 </script>
 </body>
