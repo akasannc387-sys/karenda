@@ -149,9 +149,20 @@ const DEF_SCH=Object.fromEntries(DAY_KEYS.map(k=>[k,{am:["","",""],pm:["","","",
 function load(k,fb){try{const v=JSON.parse(localStorage.getItem(k));return v!=null?v:fb;}catch{return fb;}}
 function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
-function isoToday(){return new Date().toISOString().slice(0,10);}
-function iso(d){return d.toISOString().slice(0,10);}
-function shiftIso(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d);}
+// ローカル時間でYYYY-MM-DDを返す（toISOStringはUTCなので使わない）
+function localIso(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return`${y}-${m}-${day}`;
+}
+function isoToday(){return localIso(new Date());}
+function iso(d){return localIso(d);}
+function shiftIso(s,n){
+  const d=new Date(s+"T00:00:00");
+  d.setDate(d.getDate()+n);
+  return localIso(d);
+}
 function fmtDate(s){const d=new Date(s+"T00:00:00");const w=["日","月","火","水","木","金","土"][d.getDay()];return`${d.getMonth()+1}/${d.getDate()}（${w}）`;}
 function e(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
@@ -318,7 +329,7 @@ function addTodayTodo(){
   const el=document.getElementById("v-todo-inp");
   const v=el?el.value.trim():"";if(!v)return;
   el.value="";
-  set({todos:[...S.todos,{text:v,done:false,id:Date.now(),date:iso(S.now),time:""}]});
+  set({todos:[...S.todos,{text:v,done:false,id:Date.now(),date:isoToday(),time:""}]});
 }
 function addMemo(){
   const tEl=document.getElementById("m-text");
@@ -367,8 +378,8 @@ function todoItem(t){
 }
 
 function buildView(){
-  const todayIso=iso(S.now);
-  const vd=viewDate();           // 12:00以降は翌日
+  const todayIso=isoToday();
+  const vd=viewDate();           // 18:00以降は翌日
   const vdk=viewDateKey();       // 翌日の曜日キー
   const isNextDay=vd!==todayIso;
   const tm=timeMode();const period=curPeriod();
@@ -607,7 +618,7 @@ function buildItems(){
 
 // ── MEMO TAB ──────────────────────────────────────────────────────
 function buildMemo(){
-  const todayIso=iso(S.now);
+  const todayIso=isoToday();
   const filt=sortedTodos(S.filterDate);
   const undone=filt.filter(t=>!t.done);
   const done=filt.filter(t=>t.done);
@@ -618,7 +629,7 @@ function buildMemo(){
     <button class="nbtn" onclick="set({filterDate:shiftIso(S.filterDate,-1)})">&#x2039;</button>
     <div class="dnc">
       <span class="dnl">${fmtDate(S.filterDate)}</span>
-      ${!isT?`<button class="tbtn" onclick="set({filterDate:'${todayIso}'})">今日</button>`:""}
+      ${!isT?`<button class="tbtn" onclick="set({filterDate:isoToday()})">今日</button>`:""}
     </div>
     <input type="date" id="mdp" value="${S.filterDate}" onchange="set({filterDate:this.value})">
     <label for="mdp" class="cib">📅</label>
