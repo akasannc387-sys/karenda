@@ -17,16 +17,15 @@ body{background:#050c1a;color:#e2e8f0;font-family:'Noto Sans JP','Hiragino Kaku 
 .content{flex:1;overflow-y:auto;padding:0 0 40px;}
 .tab-pane{display:none;padding:14px 16px;}
 .tab-pane.active{display:block;}
-.section{margin-bottom:22px;}
-.sec-title{font-size:13px;font-weight:700;color:#64748b;letter-spacing:.08em;margin-bottom:10px;text-transform:uppercase;}
+.sec{margin-bottom:22px;}
+.stitle{font-size:13px;font-weight:700;color:#64748b;letter-spacing:.08em;margin-bottom:10px;text-transform:uppercase;}
 .row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center;}
 .lbl{font-size:12px;color:#94a3b8;white-space:nowrap;}
 select,input[type=text],input[type=date],input[type=time]{background:#0f172a;border:1px solid #1e293b;border-radius:7px;color:#e2e8f0;padding:8px 12px;font-size:13px;outline:none;font-family:inherit;}
 select{padding:8px 10px;}
 .fi{flex:1;min-width:80px;}
 .btn{background:linear-gradient(135deg,#1d4ed8,#4f46e5);border:none;border-radius:7px;color:#fff;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap;font-family:inherit;}
-.btn-sm{background:#1e3a5f;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit;}
-.btn-danger{background:none;border:none;color:#ef4444;cursor:pointer;font-size:13px;padding:2px 6px;font-family:inherit;}
+.btnsm{background:#1e3a5f;border:1px solid #334155;border-radius:6px;color:#94a3b8;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit;}
 .rm{background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;padding:0;line-height:1;font-family:inherit;}
 .slbl{font-size:11px;color:#475569;font-weight:700;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase;}
 /* view */
@@ -39,7 +38,7 @@ select{padding:8px 10px;}
 .pcards{display:flex;flex-direction:column;gap:6px;}
 .pcard{background:#0f172a;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;border:1px solid #1e293b;border-left:3px solid #1e293b;position:relative;}
 .pnum{font-size:11px;color:#475569;font-weight:700;min-width:28px;}
-.ptm{font-size:11px;color:#334155;min-width:92px;}
+.ptm{font-size:11px;color:#334155;min-width:94px;}
 .psub{font-size:15px;font-weight:700;flex:1;}
 .adot{width:6px;height:6px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;flex-shrink:0;}
 .isec{margin-top:14px;}
@@ -70,7 +69,7 @@ select{padding:8px 10px;}
 .ti.done .ttx{color:#475569;text-decoration:line-through;}
 .ttm{font-size:11px;color:#38bdf8;margin-top:2px;}
 .ddiv{font-size:11px;color:#334155;text-align:center;padding:6px 0 2px;border-top:1px solid #1e293b;margin-top:4px;}
-/* input */
+/* input tab */
 .dtabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
 .dtab{background:#0f172a;border:1px solid #1e293b;border-radius:6px;color:#64748b;padding:6px 12px;cursor:pointer;font-size:13px;font-family:inherit;}
 .dtab.active{background:#1e3a5f;border-color:#38bdf8;color:#38bdf8;}
@@ -78,15 +77,24 @@ select{padding:8px 10px;}
 .plbl{font-size:11px;color:#475569;margin-bottom:6px;font-weight:600;}
 .prow{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .pn{font-size:12px;color:#475569;min-width:28px;}
+/* 特別授業 inline tap UI */
+.ov-period-row{display:flex;flex-direction:column;border-bottom:1px solid #1e293b;}
+.ov-period-row:last-child{border-bottom:none;}
+.ov-period-main{display:flex;align-items:center;gap:10px;padding:9px 10px;cursor:pointer;border-radius:0;transition:background .15s;}
+.ov-period-main:active{background:#1e293b;}
+.ov-period-num{font-size:11px;color:#475569;min-width:36px;font-weight:700;}
+.ov-period-sub{font-size:14px;font-weight:700;flex:1;}
+.ov-period-arrow{font-size:12px;color:#334155;}
+.ov-period-actions{display:none;flex-direction:column;gap:6px;padding:8px 10px 10px;background:#081020;border-top:1px solid #1e293b;}
+.ov-period-actions.open{display:flex;}
+.ov-action-row{display:flex;gap:6px;align-items:center;}
+.ov-action-label{font-size:11px;color:#475569;min-width:32px;}
+/* subject tabs & items */
 .stbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
 .stbtn{border:1px solid #1e293b;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;background:#0f172a;color:#64748b;font-family:inherit;}
 .ipanel{background:#0a1628;border:1px solid #334155;border-radius:10px;padding:12px;}
 .ilist{display:flex;flex-wrap:wrap;gap:6px;}
 .ichip{background:#1e293b;color:#94a3b8;padding:4px 10px;border-radius:20px;font-size:12px;display:flex;align-items:center;gap:6px;}
-/* override */
-.ovlist{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
-.ovitem{display:flex;align-items:center;gap:8px;background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:8px 12px;}
-.ovlabel{flex:1;font-size:13px;color:#94a3b8;}
 /* memo */
 .dnav{display:flex;align-items:center;gap:6px;margin-bottom:12px;background:#0f172a;border-radius:10px;padding:8px 10px;border:1px solid #1e293b;}
 .nbtn{background:none;border:none;color:#64748b;font-size:22px;cursor:pointer;padding:0 4px;line-height:1;font-family:inherit;}
@@ -103,6 +111,12 @@ select{padding:8px 10px;}
 .ttog{background:#0f172a;border:1px solid #1e293b;border-radius:6px;color:#475569;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit;}
 .ttog.on{border-color:#38bdf8;color:#38bdf8;background:#0f1f35;}
 textarea{width:100%;min-height:160px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;color:#e2e8f0;padding:12px;font-size:14px;resize:vertical;outline:none;line-height:1.7;font-family:inherit;}
+/* collapsible section */
+.collap-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:8px 0;user-select:none;}
+.collap-arrow{font-size:12px;color:#475569;transition:transform .2s;}
+.collap-arrow.open{transform:rotate(180deg);}
+.collap-body{display:none;}
+.collap-body.open{display:block;}
 </style>
 </head>
 <body>
@@ -123,38 +137,28 @@ textarea{width:100%;min-height:160px;background:#0f172a;border:1px solid #1e293b
   </div>
 </div>
 <script>
-// ── 定数 ──────────────────────────────────────────────────────
 const DAYS=["月","火","水","木","金"];
 const DAY_KEYS=["mon","tue","wed","thu","fri"];
 const COLORS=["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#f97316","#ec4899","#14b8a6","#84cc16"];
-
-// 時間割: SHL 8:30-9:00, 1限 9:00-10:00, 2限 10:00-11:00, 3限 11:00-12:00
-// 昼食 12:00-12:40, 4限 12:40-13:40, 5限 13:40-14:40, 6限 14:40-15:40, 7限 15:40-16:40
-const SHL_TIME = "8:30〜9:00";
-const PERIOD_TIMES = [
-  "9:00〜10:00","10:00〜11:00","11:00〜12:00",
-  "12:40〜13:40","13:40〜14:40","14:40〜15:40","15:40〜16:40"
-];
-// 各コマの開始・終了 (分)
-const PERIOD_SLOTS = [
-  [510,540],   // SHL
-  [540,600],[600,660],[660,720],          // 午前1-3限
-  [760,820],[820,880],[880,940],[940,1000] // 午後1-4限
-];
-
+const SHL_TIME="8:30〜9:00";
+// 1限〜7限の時刻（最大7コマ = 午前3+午後4）
+const PERIOD_TIMES=["9:00〜10:00","10:00〜11:00","11:00〜12:00","12:40〜13:40","13:40〜14:40","14:40〜15:40","15:40〜16:40"];
+const PERIOD_SLOTS=[[510,540],[540,600],[600,660],[660,720],[760,820],[820,880],[880,940],[940,1000]]; // SHL + 1〜7限
 const DEF_SCH=Object.fromEntries(DAY_KEYS.map(k=>[k,{am:["","",""],pm:["","","",""]}]));
 
-// ── ストレージ ──────────────────────────────────────────────────
 function load(k,fb){try{const v=JSON.parse(localStorage.getItem(k));return v!=null?v:fb;}catch{return fb;}}
 function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
-// ── 状態 ────────────────────────────────────────────────────────
+function isoToday(){return new Date().toISOString().slice(0,10);}
+function iso(d){return d.toISOString().slice(0,10);}
+function shiftIso(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return iso(d);}
+function fmtDate(s){const d=new Date(s+"T00:00:00");const w=["日","月","火","水","木","金","土"][d.getDay()];return`${d.getMonth()+1}/${d.getDate()}（${w}）`;}
+function e(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
 let S={
   now:new Date(),
   schedule:load("sc_schedule",DEF_SCH),
   items:load("sc_items",{}),
-  // overrides: { "YYYY-MM-DD_daykey": ["sub1","sub2",...] } — その日の全授業リスト（午前+午後結合）
-  // 旧形式との互換のため新形式キーで保存
   dayOverrides:load("sc_day_overrides",{}),
   notes:localStorage.getItem("sc_notes")||"",
   colorMap:load("sc_colors",{}),
@@ -165,22 +169,10 @@ let S={
   itemSubject:"",
   filterDate:isoToday(),
   showTime:false,
-  // 特別授業入力フォーム
   ovDate:isoToday(),
-  ovMode:"edit",   // "add" | "remove" | "edit"
-  ovInsertAt:0,
-  ovSubject:"",
-  ovRemoveIdx:0,
+  openPeriod:-1,   // 特別授業でタップ中のコマインデックス
+  schOpen:false,   // 通常時間割の折りたたみ
 };
-
-function isoToday(){return new Date().toISOString().slice(0,10);}
-function iso(d){return d.toISOString().slice(0,10);}
-function shiftIso(s,n){const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);return s===iso(d)?s:iso(d);}
-function fmtDate(s){
-  const d=new Date(s+"T00:00:00");
-  const w=["日","月","火","水","木","金","土"][d.getDay()];
-  return`${d.getMonth()+1}/${d.getDate()}（${w}）`;
-}
 
 function set(patch){
   Object.assign(S,patch);
@@ -195,16 +187,11 @@ function set(patch){
   render();
 }
 
-// ── ユーティリティ ───────────────────────────────────────────────
 function todayKey(){const w=S.now.getDay();return(w===0||w===6)?null:DAY_KEYS[w-1];}
-function timeMode(){
-  const t=S.now.getHours()*60+S.now.getMinutes();
-  return t<720?"am":t<960?"pm":"after";
-}
+function timeMode(){const t=S.now.getHours()*60+S.now.getMinutes();return t<720?"am":t<960?"pm":"after";}
 function curPeriod(){
   const t=S.now.getHours()*60+S.now.getMinutes();
-  for(let i=0;i<PERIOD_SLOTS.length;i++)
-    if(t>=PERIOD_SLOTS[i][0]&&t<PERIOD_SLOTS[i][1])return i;
+  for(let i=0;i<PERIOD_SLOTS.length;i++)if(t>=PERIOD_SLOTS[i][0]&&t<PERIOD_SLOTS[i][1])return i;
   return -1;
 }
 function subColor(s){return s?S.colorMap[s]||"#64748b":"#64748b";}
@@ -212,176 +199,131 @@ function ensureColor(s){
   if(!s||S.colorMap[s])return;
   const used=Object.values(S.colorMap);
   const c=COLORS.find(x=>!used.includes(x))||COLORS[used.length%COLORS.length];
-  S.colorMap={...S.colorMap,[s]:c};
-  save("sc_colors",S.colorMap);
+  S.colorMap={...S.colorMap,[s]:c};save("sc_colors",S.colorMap);
 }
-function e(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-
 function allSubjects(){
   const s=new Set();
   for(const d of DAY_KEYS)for(const sl of["am","pm"])(S.schedule[d]?.[sl]||[]).forEach(x=>x&&s.add(x));
   return Array.from(s);
 }
-
-// その日の通常時間割（午前+午後を結合した配列）
 function baseScheduleForDay(dk){
   if(!dk)return[];
-  const am=(S.schedule[dk]?.am||[]).slice(0,S.amCount);
-  const pm=(S.schedule[dk]?.pm||[]).slice(0,S.pmCount);
-  return [...am,...pm];
+  return[...(S.schedule[dk]?.am||[]).slice(0,S.amCount),...(S.schedule[dk]?.pm||[]).slice(0,S.pmCount)];
 }
-
-// その日の実際の時間割（特別授業上書き適用後）
 function effectiveSchedule(dateStr){
-  const d=new Date(dateStr+"T00:00:00");
-  const w=d.getDay();
+  const d=new Date(dateStr+"T00:00:00");const w=d.getDay();
   if(w===0||w===6)return[];
-  const dk=DAY_KEYS[w-1];
   if(S.dayOverrides[dateStr])return S.dayOverrides[dateStr];
-  return baseScheduleForDay(dk);
+  return baseScheduleForDay(DAY_KEYS[w-1]);
 }
-
-// 今日の持ち物
 function todayItems(){
-  const tk=todayKey();if(!tk)return[];
   const subs=effectiveSchedule(iso(S.now));
   const all=new Set();
   subs.filter(Boolean).forEach(s=>(S.items[s]||[]).forEach(it=>all.add(it)));
   return Array.from(all);
 }
 
+// メモを時刻順にソート：時刻ありを先（時間順）、時刻なしを後
 function sortedTodos(date){
-  return S.todos.filter(t=>t.date===date).sort((a,b)=>{
-    if(!a.time&&!b.time)return 0;if(!a.time)return 1;if(!b.time)return -1;
-    return a.time.localeCompare(b.time);
-  });
+  const ts=S.todos.filter(t=>t.date===date);
+  const timed=ts.filter(t=>t.time).sort((a,b)=>a.time.localeCompare(b.time));
+  const untimed=ts.filter(t=>!t.time);
+  return [...timed,...untimed];
 }
 
 function weekDates(){
   const dow=S.now.getDay();
-  return DAYS.map((_,di)=>{
-    const d=new Date(S.now);d.setDate(S.now.getDate()+(di+1-dow));return iso(d);
-  });
+  return DAYS.map((_,di)=>{const d=new Date(S.now);d.setDate(S.now.getDate()+(di+1-dow));return iso(d);});
 }
 
-// ── 特別授業操作 ─────────────────────────────────────────────────
+// ── 特別授業操作 ──────────────────────────────────────────────────
 function initDayOverride(dateStr){
-  // まだその日のオーバーライドがなければ通常時間割でコピー
-  if(!S.dayOverrides[dateStr]){
-    const d=new Date(dateStr+"T00:00:00");
-    const w=d.getDay();
-    if(w===0||w===6)return;
-    const dk=DAY_KEYS[w-1];
-    S.dayOverrides={...S.dayOverrides,[dateStr]:[...baseScheduleForDay(dk)]};
-  }
+  if(S.dayOverrides[dateStr])return;
+  const d=new Date(dateStr+"T00:00:00");const w=d.getDay();
+  if(w===0||w===6)return;
+  S.dayOverrides={...S.dayOverrides,[dateStr]:[...baseScheduleForDay(DAY_KEYS[w-1])]};
 }
-
-function ovAdd(){
-  const subj=document.getElementById("ov-subj")?.value.trim();
-  const atEl=document.getElementById("ov-insert-at");
-  const at=atEl?Number(atEl.value):0;
-  if(!subj)return;
+function ovDeletePeriod(idx){
   initDayOverride(S.ovDate);
-  const arr=[...S.dayOverrides[S.ovDate]];
-  arr.splice(at,0,subj);
-  ensureColor(subj);
-  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr}});
+  const arr=[...S.dayOverrides[S.ovDate]];arr.splice(idx,1);
+  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr},openPeriod:-1});
 }
-
-function ovRemove(){
-  const idxEl=document.getElementById("ov-remove-idx");
-  const idx=idxEl?Number(idxEl.value):0;
+function ovEditPeriod(idx){
+  const el=document.getElementById("ov-edit-inp-"+idx);
+  if(!el)return;
+  const v=el.value.trim();
   initDayOverride(S.ovDate);
-  const arr=[...S.dayOverrides[S.ovDate]];
-  arr.splice(idx,1);
-  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr}});
+  const arr=[...S.dayOverrides[S.ovDate]];arr[idx]=v;
+  if(v)ensureColor(v);
+  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr},openPeriod:-1});
 }
-
-function ovEdit(){
-  const idxEl=document.getElementById("ov-edit-idx");
-  const subjEl=document.getElementById("ov-edit-subj");
-  if(!idxEl||!subjEl)return;
-  const idx=Number(idxEl.value);
-  const subj=subjEl.value.trim();
+function ovInsertBefore(idx){
+  const el=document.getElementById("ov-ins-inp-"+idx);
+  if(!el)return;
+  const v=el.value.trim();if(!v)return;
   initDayOverride(S.ovDate);
-  const arr=[...S.dayOverrides[S.ovDate]];
-  arr[idx]=subj;
-  if(subj)ensureColor(subj);
-  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr}});
+  const arr=[...S.dayOverrides[S.ovDate]];arr.splice(idx,0,v);
+  ensureColor(v);
+  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr},openPeriod:-1});
 }
-
-function ovReset(){
-  const n={...S.dayOverrides};
-  delete n[S.ovDate];
-  set({dayOverrides:n});
+function ovInsertAfter(idx){
+  const el=document.getElementById("ov-insa-inp-"+idx);
+  if(!el)return;
+  const v=el.value.trim();if(!v)return;
+  initDayOverride(S.ovDate);
+  const arr=[...S.dayOverrides[S.ovDate]];arr.splice(idx+1,0,v);
+  ensureColor(v);
+  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr},openPeriod:-1});
 }
+function ovReset(){set({dayOverrides:{...S.dayOverrides,[S.ovDate]:undefined},openPeriod:-1});
+  const n={...S.dayOverrides};delete n[S.ovDate];set({dayOverrides:n,openPeriod:-1});}
+function toggleOvPeriod(idx){set({openPeriod:S.openPeriod===idx?-1:idx});}
 
-// ── Todo操作 ─────────────────────────────────────────────────────
+// ── Todo操作 ──────────────────────────────────────────────────────
 function addTodayTodo(){
   const el=document.getElementById("v-todo-inp");
-  const val=el?el.value.trim():"";
-  if(!val)return;
+  const v=el?el.value.trim():"";if(!v)return;
   el.value="";
-  set({todos:[...S.todos,{text:val,done:false,id:Date.now(),date:iso(S.now),time:""}]});
+  set({todos:[...S.todos,{text:v,done:false,id:Date.now(),date:iso(S.now),time:""}]});
 }
-
 function addMemo(){
-  const textEl=document.getElementById("m-text");
-  const dateEl=document.getElementById("m-date");
-  const timeEl=document.getElementById("m-time");
-  const val=textEl?textEl.value.trim():"";
-  if(!val)return;
-  const date=dateEl?dateEl.value:S.filterDate;
-  const time=timeEl?timeEl.value:"";
-  textEl.value="";
-  set({todos:[...S.todos,{text:val,done:false,id:Date.now(),date,time}]});
+  const tEl=document.getElementById("m-text");
+  const dEl=document.getElementById("m-date");
+  const tmEl=document.getElementById("m-time");
+  const v=tEl?tEl.value.trim():"";if(!v)return;
+  const date=dEl?dEl.value:S.filterDate;
+  const time=tmEl?tmEl.value:"";
+  tEl.value="";
+  set({todos:[...S.todos,{text:v,done:false,id:Date.now(),date,time}]});
 }
-
-function toggleTodo(id){
-  set({todos:S.todos.map(t=>t.id===id?{...t,done:!t.done}:t)});
-}
-function delTodo(id){
-  set({todos:S.todos.filter(t=>t.id!==id)});
-}
-
-// 持ち物
+function toggleTodo(id){set({todos:S.todos.map(t=>t.id===id?{...t,done:!t.done}:t)});}
+function delTodo(id){set({todos:S.todos.filter(t=>t.id!==id)});}
 function addItem(){
   const el=document.getElementById("item-inp");
-  const val=el?el.value.trim():"";
-  if(!val||!S.itemSubject)return;
+  const v=el?el.value.trim():"";if(!v||!S.itemSubject)return;
   el.value="";
-  set({items:{...S.items,[S.itemSubject]:[...(S.items[S.itemSubject]||[]),val]}});
+  set({items:{...S.items,[S.itemSubject]:[...(S.items[S.itemSubject]||[]),v]}});
 }
-function rmItem(idx){
-  set({items:{...S.items,[S.itemSubject]:S.items[S.itemSubject].filter((_,j)=>j!==idx)}});
-}
+function rmItem(idx){set({items:{...S.items,[S.itemSubject]:S.items[S.itemSubject].filter((_,j)=>j!==idx)}});}
 function toggleItemSubj(s){set({itemSubject:S.itemSubject===s?"":s});}
-
-// 時間割
-function updSchLive(day,slot,idx,val){
-  if(S.schedule[day])S.schedule[day][slot][idx]=val;
-}
-function updSchCommit(day,slot,idx,val){
-  const n=JSON.parse(JSON.stringify(S.schedule));
-  n[day][slot][idx]=val;
-  S.schedule=n;save("sc_schedule",S.schedule);
-  if(val)ensureColor(val);
-  document.getElementById("items-sec") && (document.getElementById("items-sec").innerHTML=buildItems());
+function updSchLive(day,slot,idx,v){if(S.schedule[day])S.schedule[day][slot][idx]=v;}
+function updSchCommit(day,slot,idx,v){
+  const n=JSON.parse(JSON.stringify(S.schedule));n[day][slot][idx]=v;
+  S.schedule=n;save("sc_schedule",S.schedule);if(v)ensureColor(v);
+  const el=document.getElementById("items-sec");if(el)el.innerHTML=buildItems();
 }
 
-// ── HTML builders ────────────────────────────────────────────────
+// ── VIEW ──────────────────────────────────────────────────────────
 function pCard(s,label,timeStr,active){
   const c=subColor(s);
   const bl=s?`border-left:3px solid ${c}`:"";
   const act=active?`border-color:${c};box-shadow:0 0 14px ${c}44;background:#0f1f35`:"";
   return`<div class="pcard" style="${bl};${act}">
-    <div class="pnum">${e(label)}</div>
-    <div class="ptm">${timeStr}</div>
+    <div class="pnum">${e(label)}</div><div class="ptm">${timeStr}</div>
     <div class="psub" style="color:${s?c:"#334155"}">${e(s)||"—"}</div>
     ${active?`<div class="adot"></div>`:""}
   </div>`;
 }
-
 function todoItem(t){
   return`<div class="ti${t.done?" done":""}">
     <button class="cb${t.done?" chk":""}" onclick="toggleTodo(${t.id})">${t.done?"✓":""}</button>
@@ -390,24 +332,18 @@ function todoItem(t){
   </div>`;
 }
 
-// ── VIEW TAB ─────────────────────────────────────────────────────
 function buildView(){
-  const todayIso=iso(S.now);
-  const tk=todayKey();
-  const tm=timeMode();
-  const period=curPeriod();
+  const todayIso=iso(S.now);const tk=todayKey();const tm=timeMode();const period=curPeriod();
   const isWE=S.now.getDay()===0||S.now.getDay()===6;
   const dn=["日","月","火","水","木","金","土"];
   const ds=`${S.now.getMonth()+1}月${S.now.getDate()}日（${dn[S.now.getDay()]}）`;
-  const hh=String(S.now.getHours()).padStart(2,"0");
-  const mm=String(S.now.getMinutes()).padStart(2,"0");
+  const hh=String(S.now.getHours()).padStart(2,"0"),mm=String(S.now.getMinutes()).padStart(2,"0");
   const mLbl={am:"☀️ 午前の授業",pm:"🌙 午後の授業",after:"🌃 放課後"};
   const mClr={am:"#f59e0b",pm:"#818cf8",after:"#10b981"};
-  const tItems=todayItems();
-  const wDates=weekDates();
+  const tItems=todayItems(),wDates=weekDates();
   const nowT=S.now.getHours()*60+S.now.getMinutes();
   const tTodos=sortedTodos(todayIso);
-  const effSch=effectiveSchedule(todayIso);  // 今日の全授業 [am..., pm...]
+  const effSch=effectiveSchedule(todayIso);
 
   let h=`<div class="dh"><div class="dt">${e(ds)}</div><div class="tt">${hh}:${mm}</div></div>`;
   if(!isWE){const bc=mClr[tm];h+=`<div class="mbadge" style="background:${bc}22;border-color:${bc};color:${bc}">${mLbl[tm]}</div>`;}
@@ -416,26 +352,17 @@ function buildView(){
     h+=`<div class="wmsg">🎉 今日は休日です</div>`;
   } else if(tm==="am"){
     h+=`<div class="sb"><div class="slbl">☀️ 午前</div><div class="pcards">`;
-    // SHL
     h+=pCard("","SHL",SHL_TIME,period===0);
-    // 午前授業
-    for(let i=0;i<S.amCount;i++){
-      const s=effSch[i]||"";
-      h+=pCard(s,`${i+1}限`,PERIOD_TIMES[i],period===i+1);
-    }
+    for(let i=0;i<S.amCount;i++) h+=pCard(effSch[i]||"",`${i+1}限`,PERIOD_TIMES[i],period===i+1);
     h+=`</div></div>`;
     if(tItems.length>0){h+=`<div class="isec"><div class="slbl">🎒 今日の持ち物</div><div class="igrid">`;tItems.forEach(it=>h+=`<div class="ibadge">${e(it)}</div>`);h+=`</div></div>`;}
   } else if(tm==="pm"){
     h+=`<div class="sb"><div class="slbl">🌙 午後</div><div class="pcards">`;
-    for(let i=0;i<S.pmCount;i++){
-      const s=effSch[S.amCount+i]||"";
-      h+=pCard(s,`${S.amCount+i+1}限`,PERIOD_TIMES[S.amCount+i],period===S.amCount+i+1);
-    }
+    for(let i=0;i<S.pmCount;i++) h+=pCard(effSch[S.amCount+i]||"",`${S.amCount+i+1}限`,PERIOD_TIMES[S.amCount+i],period===S.amCount+i+1);
     h+=`</div></div>`;
     if(tItems.length>0){h+=`<div class="isec"><div class="slbl">🎒 今日の持ち物</div><div class="igrid">`;tItems.forEach(it=>h+=`<div class="ibadge">${e(it)}</div>`);h+=`</div></div>`;}
   } else {
-    // 放課後
-    h+=`<div class="section"><div class="slbl">✅ 今日のやること</div>
+    h+=`<div class="sec"><div class="slbl">✅ 今日のやること</div>
     <div class="row"><input class="fi" id="v-todo-inp" type="text" placeholder="タスクを追加...">
     <button class="btn" onclick="addTodayTodo()">追加</button></div>`;
     if(tTodos.length===0)h+=`<div class="etodo">お疲れ様！タスクはありません 🎉</div>`;
@@ -447,7 +374,7 @@ function buildView(){
   if(!isWE){
     h+=`<div class="adsec"><div class="slbl">📋 今日の全授業</div><div class="adgrid">
     <div class="adcol"><div class="adch">☀️ 午前</div>
-    <div class="adcard" style="background:#0a1628;border-color:#1e3a5f"><div style="font-size:9px;color:#334155">${SHL_TIME}</div><div style="font-size:12px;color:#334155">SHL</div></div>`;
+    <div class="adcard" style="background:#0a1628;border-color:#0f2040"><div style="font-size:9px;color:#334155">${SHL_TIME}</div><div style="font-size:12px;font-weight:700;color:#334155">SHL</div></div>`;
     for(let i=0;i<S.amCount;i++){
       const s=effSch[i]||"";const c=s?subColor(s):"#1e293b";const a=period===i+1;
       h+=`<div class="adcard" style="border-color:${a?c:"#1e293b"};background:${s?c+"18":"#0a1628"};box-shadow:${a?`0 0 10px ${c}44`:"none"}">
@@ -466,7 +393,7 @@ function buildView(){
     h+=`</div></div></div>`;
   }
 
-  // 週間メモビュー
+  // 週間メモ（時刻あり→時間順、時刻なし→後）
   h+=`<div class="wsec"><div class="slbl">📆 今週の予定</div><div class="wgrid">`;
   wDates.forEach((ds2,di)=>{
     const isT=ds2===todayIso;
@@ -491,20 +418,85 @@ function buildView(){
   return h;
 }
 
-// ── INPUT TAB ────────────────────────────────────────────────────
+// ── INPUT TAB ─────────────────────────────────────────────────────
 function buildInput(){
   const curEff=effectiveSchedule(S.ovDate);
-  const totalPeriods=S.amCount+S.pmCount;
+  const hasOverride=!!S.dayOverrides[S.ovDate];
 
-  let h=`<div class="section"><h3 class="sec-title">⚙️ コマ数設定</h3>
+  // 1. 特別授業（上）
+  let h=`<div class="sec"><h3 class="stitle">✏️ 特別授業（その日限り）</h3>
   <div class="row">
+    <input type="date" class="fi" value="${S.ovDate}" onchange="set({ovDate:this.value,openPeriod:-1})">
+    ${hasOverride?`<button class="btnsm" onclick="ovReset()">通常に戻す</button>`:""}
+  </div>`;
+
+  // コマ一覧（タップで展開）
+  if(curEff.length===0){
+    h+=`<div style="color:#334155;font-size:13px;padding:8px 0">授業なし（休日または未設定）</div>`;
+  } else {
+    h+=`<div style="background:#0a1628;border:1px solid #1e293b;border-radius:10px;overflow:hidden;margin-bottom:8px">`;
+    curEff.forEach((s,i)=>{
+      const c=subColor(s);
+      const isAm=i<S.amCount;
+      const open=S.openPeriod===i;
+      h+=`<div class="ov-period-row">
+        <div class="ov-period-main" onclick="toggleOvPeriod(${i})">
+          <span class="ov-period-num">${i+1}限</span>
+          <span class="ov-period-sub" style="color:${s?c:"#334155"}">${e(s)||"（空き）"}</span>
+          <span style="font-size:10px;color:#334155">${isAm?"午前":"午後"}</span>
+          <span class="ov-period-arrow" style="${open?"transform:rotate(180deg)":""}">▼</span>
+        </div>
+        <div class="ov-period-actions${open?" open":""}">
+          <!-- 変更 -->
+          <div class="ov-action-row">
+            <span class="ov-action-label">✎ 変更</span>
+            <input class="fi" type="text" id="ov-edit-inp-${i}" placeholder="${e(s)||"授業名"}" value="${e(s)}">
+            <button class="btnsm" onclick="ovEditPeriod(${i})">確定</button>
+          </div>
+          <!-- 前に追加 -->
+          <div class="ov-action-row">
+            <span class="ov-action-label">↑ 前挿入</span>
+            <input class="fi" type="text" id="ov-ins-inp-${i}" placeholder="${i+1}限の前に追加">
+            <button class="btnsm" onclick="ovInsertBefore(${i})">追加</button>
+          </div>
+          <!-- 後に追加 -->
+          <div class="ov-action-row">
+            <span class="ov-action-label">↓ 後挿入</span>
+            <input class="fi" type="text" id="ov-insa-inp-${i}" placeholder="${i+2}限として追加">
+            <button class="btnsm" onclick="ovInsertAfter(${i})">追加</button>
+          </div>
+          <!-- 削除 -->
+          <div class="ov-action-row">
+            <button style="background:#1a0a0a;border:1px solid #ef444433;border-radius:6px;color:#ef4444;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit;width:100%" onclick="ovDeletePeriod(${i})">🗑 この授業を削除（以降繰り上げ）</button>
+          </div>
+        </div>
+      </div>`;
+    });
+    h+=`</div>`;
+    // 末尾に追加ボタン
+    h+=`<div class="row">
+      <input class="fi" type="text" id="ov-append-inp" placeholder="末尾（${curEff.length+1}限）に授業を追加">
+      <button class="btnsm" onclick="ovAppend()">追加</button>
+    </div>`;
+  }
+  h+=`</div>`;
+
+  // 2. 持ち物登録（中）
+  h+=`<div class="sec"><h3 class="stitle">🎒 持ち物登録</h3><div id="items-sec">${buildItems()}</div></div>`;
+
+  // 3. 通常時間割（折りたたみ、下）
+  h+=`<div class="sec">
+  <div class="collap-hdr" onclick="set({schOpen:!S.schOpen})">
+    <h3 class="stitle" style="margin-bottom:0">📅 通常時間割</h3>
+    <span class="collap-arrow${S.schOpen?" open":""}">▼</span>
+  </div>
+  <div class="collap-body${S.schOpen?" open":""}">
+  <div class="row" style="margin-top:8px">
     <span class="lbl">午前</span>
     <select onchange="set({amCount:Number(this.value)})">${[2,3].map(n=>`<option value="${n}"${S.amCount===n?" selected":""}>${n}コマ</option>`).join("")}</select>
     <span class="lbl" style="margin-left:8px">午後</span>
     <select onchange="set({pmCount:Number(this.value)})">${[3,4].map(n=>`<option value="${n}"${S.pmCount===n?" selected":""}>${n}コマ</option>`).join("")}</select>
-  </div></div>
-
-  <div class="section"><h3 class="sec-title">📅 通常時間割</h3>
+  </div>
   <div class="dtabs">${DAY_KEYS.map((dk,i)=>`<button class="dtab${S.editDay===dk?" active":""}" onclick="set({editDay:'${dk}'})">${DAYS[i]}曜</button>`).join("")}</div>
   <div class="pg"><div class="plbl">☀️ 午前</div>
   ${Array.from({length:S.amCount},(_,i)=>`<div class="prow"><span class="pn">${i+1}限</span>
@@ -517,66 +509,19 @@ function buildInput(){
   <input class="fi" type="text" placeholder="教科名" value="${e(S.schedule[S.editDay]?.pm?.[i]||"")}"
     oninput="updSchLive('${S.editDay}','pm',${i},this.value)"
     onblur="updSchCommit('${S.editDay}','pm',${i},this.value)"
-    onkeydown="if(event.key==='Enter'){updSchCommit('${S.editDay}','pm',${i},this.value);this.blur()}"></div>`).join("")}</div></div>
+    onkeydown="if(event.key==='Enter'){updSchCommit('${S.editDay}','pm',${i},this.value);this.blur()}"></div>`).join("")}</div>
+  </div></div>`;
 
-  <div class="section"><h3 class="sec-title">✏️ 特別授業（その日限り）</h3>
-  <div class="row">
-    <input type="date" class="fi" id="ov-date-inp" value="${S.ovDate}" onchange="set({ovDate:this.value})">
-    ${S.dayOverrides[S.ovDate]?`<button class="btn-sm" onclick="ovReset()">通常に戻す</button>`:""}
-  </div>
-
-  <div style="background:#0a1628;border:1px solid #1e293b;border-radius:10px;padding:12px;margin-bottom:10px">
-    <div class="plbl">📋 ${fmtDate(S.ovDate)}の授業（${curEff.length}コマ）</div>`;
-
-  if(curEff.length===0){
-    h+=`<div style="color:#334155;font-size:12px">授業なし（休日または未設定）</div>`;
-  } else {
-    curEff.forEach((s,i)=>{
-      const c=subColor(s);
-      const lbl=i<S.amCount?`${i+1}限（午前）`:`${i+1}限（午後）`;
-      h+=`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e293b">
-        <span style="font-size:11px;color:#475569;min-width:70px">${lbl}</span>
-        <span style="font-size:14px;font-weight:700;flex:1;color:${s?c:"#334155"}">${e(s)||"（空き）"}</span>
-      </div>`;
-    });
-  }
-  h+=`</div>
-
-  <div style="display:flex;gap:0;margin-bottom:10px;background:#0f172a;border-radius:8px;border:1px solid #1e293b;overflow:hidden">
-    ${["add","remove","edit"].map(m=>`<button style="flex:1;padding:8px 0;border:none;cursor:pointer;font-size:12px;font-family:inherit;background:${S.ovMode===m?"#1e3a5f":"transparent"};color:${S.ovMode===m?"#38bdf8":"#64748b"};font-weight:${S.ovMode===m?"700":"400"}" onclick="set({ovMode:'${m}'})">${m==="add"?"＋追加":m==="remove"?"－削除":"✎ 変更"}</button>`).join("")}
-  </div>`;
-
-  if(S.ovMode==="add"){
-    const opts=Array.from({length:curEff.length+1},(_,i)=>{
-      const lbl=i===0?"先頭（1限目の前）":i===curEff.length?`末尾（${curEff.length+1}限目）`:`${i}限の後（${i+1}限目に）`;
-      return`<option value="${i}"${S.ovInsertAt===i?" selected":""}>${lbl}</option>`;
-    }).join("");
-    h+=`<div class="row"><select class="fi" id="ov-insert-at" onchange="S.ovInsertAt=Number(this.value)">${opts}</select></div>
-    <div class="row"><input class="fi" type="text" id="ov-subj" placeholder="追加する授業名">
-    <button class="btn" onclick="ovAdd()">追加</button></div>`;
-  } else if(S.ovMode==="remove"){
-    if(curEff.length===0){
-      h+=`<div style="color:#475569;font-size:13px">削除できる授業がありません</div>`;
-    } else {
-      const opts=curEff.map((s,i)=>`<option value="${i}">${i+1}限: ${s||"（空き）"}</option>`).join("");
-      h+=`<div class="row"><select class="fi" id="ov-remove-idx">${opts}</select>
-      <button class="btn" onclick="ovRemove()">削除</button></div>
-      <div style="font-size:11px;color:#475569;margin-top:4px">削除すると以降の授業が繰り上がります</div>`;
-    }
-  } else {
-    if(curEff.length===0){
-      h+=`<div style="color:#475569;font-size:13px">変更できる授業がありません</div>`;
-    } else {
-      const opts=curEff.map((s,i)=>`<option value="${i}">${i+1}限: ${s||"（空き）"}</option>`).join("");
-      h+=`<div class="row"><select class="fi" id="ov-edit-idx">${opts}</select></div>
-      <div class="row"><input class="fi" type="text" id="ov-edit-subj" placeholder="新しい授業名（空欄で空き）">
-      <button class="btn" onclick="ovEdit()">変更</button></div>`;
-    }
-  }
-  h+=`</div>`;
-
-  h+=`<div class="section"><h3 class="sec-title">🎒 持ち物登録</h3><div id="items-sec">${buildItems()}</div></div>`;
   return h;
+}
+
+function ovAppend(){
+  const el=document.getElementById("ov-append-inp");
+  const v=el?el.value.trim():"";if(!v)return;
+  initDayOverride(S.ovDate);
+  const arr=[...S.dayOverrides[S.ovDate],v];
+  ensureColor(v);
+  set({dayOverrides:{...S.dayOverrides,[S.ovDate]:arr}});
 }
 
 function buildItems(){
@@ -602,7 +547,7 @@ function buildItems(){
   return h;
 }
 
-// ── MEMO TAB ─────────────────────────────────────────────────────
+// ── MEMO TAB ──────────────────────────────────────────────────────
 function buildMemo(){
   const todayIso=iso(S.now);
   const filt=sortedTodos(S.filterDate);
@@ -610,7 +555,7 @@ function buildMemo(){
   const done=filt.filter(t=>t.done);
   const isT=S.filterDate===todayIso;
 
-  let h=`<div class="section">
+  let h=`<div class="sec">
   <div class="dnav">
     <button class="nbtn" onclick="set({filterDate:shiftIso(S.filterDate,-1)})">&#x2039;</button>
     <div class="dnc">
@@ -631,8 +576,7 @@ function buildMemo(){
     <div class="ameta">
       <span class="aml">日付</span>
       <input type="date" class="md" id="m-date" value="${S.filterDate}">
-      <button class="ttog${S.showTime?" on":""}" onclick="set({showTime:!S.showTime})"
-        >🕐 ${S.showTime?"時刻あり":"時刻なし"}</button>
+      <button class="ttog${S.showTime?" on":""}" onclick="set({showTime:!S.showTime})">🕐 ${S.showTime?"時刻あり":"時刻なし"}</button>
       ${S.showTime?`<input type="time" class="mtm" id="m-time" value="">`:``}
     </div>
   </div>
@@ -644,12 +588,12 @@ function buildMemo(){
   </div>`}
   </div>
 
-  <div class="section"><h3 class="sec-title">📝 フリーメモ</h3>
+  <div class="sec"><h3 class="stitle">📝 フリーメモ</h3>
   <textarea oninput="S.notes=this.value;save('sc_notes',this.value)">${e(S.notes)}</textarea></div>`;
   return h;
 }
 
-// ── タブ切り替え ───────────────────────────────────────────────
+// ── タブ ─────────────────────────────────────────────────────────
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
     document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
@@ -659,7 +603,6 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   });
 });
 
-// ── レンダリング ───────────────────────────────────────────────
 function render(){
   document.getElementById("pane-view").innerHTML=buildView();
   document.getElementById("pane-input").innerHTML=buildInput();
