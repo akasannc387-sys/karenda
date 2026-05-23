@@ -187,6 +187,7 @@ let S={
   schOpen:false,
   swapA:{date:isoToday(),idx:-1},
   swapB:{date:isoToday(),idx:-1},
+  expandedTodo:null,  // 週間ビューで展開中のtodo id
 };
 
 function set(patch){
@@ -497,9 +498,15 @@ function buildView(){
       const bl=t.done?"#1e293b":isT?"#38bdf8":"#334155";
       const bg=isT?"#0f1f35":"#0f172a";
       const tc=t.done?"#334155":past?"#475569":"#94a3b8";
-      h+=`<div class="wtc" style="opacity:${op};text-decoration:${t.done?"line-through":"none"};border-left:2px solid ${bl};background:${bg}">
+      const isExp=S.expandedTodo===t.id;
+      const short=t.text.length>6?t.text.slice(0,6)+"…":t.text;
+      h+=`<div class="wtc" onclick="set({expandedTodo:${isExp?'null':t.id}})"
+        style="opacity:${op};border-left:2px solid ${bl};background:${bg};cursor:pointer;transition:all .2s">
         ${t.time?`<div style="font-size:8px;color:${past?"#334155":"#38bdf8"};margin-bottom:1px">${e(t.time)}</div>`:""}
-        <div style="font-size:9px;color:${tc};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e(t.text)}</div></div>`;
+        <div style="font-size:9px;color:${tc};overflow:hidden;text-decoration:${t.done?"line-through":"none"};
+          ${isExp?"white-space:normal;word-break:break-all":"text-overflow:ellipsis;white-space:nowrap"}">
+          ${isExp?e(t.text):e(short)}</div>
+      </div>`;
     });
     h+=`</div>`;
   });
@@ -738,6 +745,23 @@ function buildMemo(){
           : ""}
       </div>`
   }
+  </div>
+
+  <div class="sec"><h3 class="stitle">🗑 データクリア</h3>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#0a1628;border:1px solid #1e293b;border-radius:8px;padding:10px 12px">
+      <span style="font-size:13px;color:#94a3b8">予定・タスク（全日付）</span>
+      <button onclick="if(confirm('全ての予定・タスクを削除しますか？'))set({todos:[]})" style="background:#1a0a0a;border:1px solid #ef444433;border-radius:6px;color:#ef4444;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">クリア</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#0a1628;border:1px solid #1e293b;border-radius:8px;padding:10px 12px">
+      <span style="font-size:13px;color:#94a3b8">フリーメモ</span>
+      <button onclick="if(confirm('フリーメモを全て削除しますか？'))set({noteItems:[]})" style="background:#1a0a0a;border:1px solid #ef444433;border-radius:6px;color:#ef4444;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">クリア</button>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#0a1628;border:1px solid #1e293b;border-radius:8px;padding:10px 12px">
+      <span style="font-size:13px;color:#94a3b8">特別授業の上書き（全日付）</span>
+      <button onclick="if(confirm('特別授業の設定を全てリセットしますか？'))set({dayOverrides:{}})" style="background:#1a0a0a;border:1px solid #ef444433;border-radius:6px;color:#ef4444;padding:4px 10px;font-size:12px;cursor:pointer;font-family:inherit">クリア</button>
+    </div>
+  </div>
   </div>
 
   <div class="sec"><h3 class="stitle">📅 カレンダー取り込み</h3>
